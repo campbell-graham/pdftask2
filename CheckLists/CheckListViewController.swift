@@ -97,11 +97,13 @@ class CheckListViewController : UITableViewController {
     }
     
     @IBAction func addItem() {
-        let newRowIndex = items.count
-        items.append(CheckListItem(text: "sdofjsdnckds", checked: false))
-        let indexPath = IndexPath(row: newRowIndex, section: 0)
-        let indexPaths = [indexPath]
-        tableView.insertRows(at: indexPaths, with: .automatic)
+//        let newRowIndex = items.count
+//        items.append(CheckListItem(text: "sdofjsdnckds", checked: false))
+//        let indexPath = IndexPath(row: newRowIndex, section: 0)
+//        let indexPaths = [indexPath]
+//        tableView.insertRows(at: indexPaths, with: .automatic)
+        let destination = AddItemViewController()
+        navigationController?.pushViewController(destination, animated: true)
     }
     
     override func didReceiveMemoryWarning() {
