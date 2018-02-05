@@ -10,6 +10,7 @@ import UIKit
 
 class AddItemViewController: UITableViewController, UITextFieldDelegate {
     
+    weak var delegate: AddItemViewControllerDelegate?
     var itemNameTextField : UITextField!
     var doneBarButtonItem: UIBarButtonItem!
     override func viewDidLoad() {
@@ -39,7 +40,7 @@ class AddItemViewController: UITableViewController, UITextFieldDelegate {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         itemNameTextField = UITextField(frame: CGRect(x: 10, y: 0, width: cell.bounds.width - 10, height: cell.bounds.height))
-        itemNameTextField.delegate = selfmdlf; 
+        itemNameTextField.delegate = self
         itemNameTextField.placeholder = "Enter reminder text here"
         itemNameTextField.font = UIFont.systemFont(ofSize: 17)
         cell.contentView.addSubview(itemNameTextField)
@@ -52,13 +53,14 @@ class AddItemViewController: UITableViewController, UITextFieldDelegate {
     
     init() {
         super.init(style: .grouped)
-        doneBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(printText))
+        doneBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done))
         navigationItem.rightBarButtonItem = doneBarButtonItem
         doneBarButtonItem.isEnabled = false
     }
     
-    @IBAction func printText() {
-        print("\(itemNameTextField.text!)")
+    @IBAction func done() {
+        delegate?.addItemViewController(self, didFinishAdding: CheckListItem(text: itemNameTextField.text!, checked: false))
+        navigationController?.popViewController(animated: true)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -75,4 +77,8 @@ class AddItemViewController: UITableViewController, UITextFieldDelegate {
         
         return true
     }
+}
+
+protocol AddItemViewControllerDelegate: class {
+    func addItemViewController(_ controller: AddItemViewController, didFinishAdding item: CheckListItem)
 }
