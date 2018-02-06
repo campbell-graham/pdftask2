@@ -8,9 +8,10 @@
 
 import UIKit
 
-class AllListsViewController: UITableViewController {
+class AllListsViewController: UITableViewController, ListDetailViewControllerDelegate {
     
     var lists = [Checklist]()
+    var addChecklistBarButtonItem: UIBarButtonItem!
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -27,11 +28,13 @@ class AllListsViewController: UITableViewController {
         tableView.tableFooterView = UIView()
         tableView.rowHeight = 64
         
-        
         //dummy data
         lists.append(Checklist(name: "Birthdays"))
         lists.append(Checklist(name: "Groceries"))
         lists.append(Checklist(name: "Other stuff"))
+        
+        addChecklistBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(openListDetailController))
+        navigationItem.rightBarButtonItem = addChecklistBarButtonItem
         
         tableView.reloadData()
     }
@@ -55,6 +58,36 @@ class AllListsViewController: UITableViewController {
         let destination = CheckListViewController(checklist: lists[indexPath.row])
         self.navigationController?.pushViewController(destination, animated: true)
     }
-
+    
+    override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
+        let edit = UITableViewRowAction(style: .normal, title: "Edit") { action, index in
+            let destination = ListDetailViewController(checklist: self.lists[editActionsForRowAt.row])
+            destination.delegate = self
+            self.navigationController?.pushViewController(destination, animated: true)
+        }
+        edit.backgroundColor = .lightGray
+        let delete = UITableViewRowAction(style: .normal, title: "Delete") { action, index in
+            self.lists.remove(at: editActionsForRowAt.row)
+            let indexPaths = [editActionsForRowAt]
+            tableView.deleteRows(at: indexPaths, with: .automatic)
+        }
+        delete.backgroundColor = .red
+        return [delete, edit]
+    }
+    
+    func listDetailViewController(_ controller: ListDetailViewController, didFinishAdding checklist: Checklist) {
+        lists.append(checklist)
+        tableView.reloadData()
+    }
+    
+    func listDetailViewController(_ controller: ListDetailViewController, didFinishEditing checklist: Checklist) {
+        tableView.reloadData()
+    }
+    
+    @IBAction func openListDetailController() {
+        let destination = ListDetailViewController(checklist: nil)
+        destination.delegate = self
+        navigationController?.pushViewController(destination, animated: true)
+    }
 
 }
