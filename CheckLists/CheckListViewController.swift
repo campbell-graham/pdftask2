@@ -11,21 +11,17 @@ import UIKit
 class CheckListViewController : UITableViewController, ItemDetailViewControllerDelegate {
     
     var items = [CheckListItem]()
-
+    var checklist: Checklist!
     
    
     
-    init() {
+    init(checklist: Checklist) {
+        self.checklist = checklist
         super.init(nibName: nil, bundle: nil)
         let addListItemBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItem))
         self.navigationItem.rightBarButtonItem = addListItemBarButtonItem
-        self.title = "Items"
         tableView.tableFooterView = UIView()
         tableView.rowHeight = 64
-        
-        //test
-        print("Documents folder is \(documentsDirectory())")
-        print("Data file path is \(dataFilePath())")
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -37,6 +33,7 @@ class CheckListViewController : UITableViewController, ItemDetailViewControllerD
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "CheckListItem")
         loadCheckListItems()
         tableView.reloadData()
+        title = checklist.name
     }
     
     required init?(coder aDecoder: NSCoder) {

@@ -10,6 +10,8 @@ import UIKit
 
 class AllListsViewController: UITableViewController {
     
+    var lists = [Checklist]()
+    
     init() {
         super.init(nibName: nil, bundle: nil)
         self.title = "Checklists"
@@ -24,6 +26,14 @@ class AllListsViewController: UITableViewController {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "ListItem")
         tableView.tableFooterView = UIView()
         tableView.rowHeight = 64
+        
+        
+        //dummy data
+        lists.append(Checklist(name: "Birthdays"))
+        lists.append(Checklist(name: "Groceries"))
+        lists.append(Checklist(name: "Other stuff"))
+        
+        tableView.reloadData()
     }
 
     override func didReceiveMemoryWarning() {
@@ -31,18 +41,18 @@ class AllListsViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        return lists.count
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ListItem", for: indexPath)
-        cell.textLabel!.text = "\(indexPath.row)"
+        cell.textLabel!.text = lists[indexPath.row].name
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let destination = CheckListViewController()
+        let destination = CheckListViewController(checklist: lists[indexPath.row])
         self.navigationController?.pushViewController(destination, animated: true)
     }
 
