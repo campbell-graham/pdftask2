@@ -30,6 +30,10 @@ class CheckListViewController : UITableViewController, AddItemViewControllerDele
         tableView.rowHeight = 64
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        tableView.reloadData()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "CheckListItem")
@@ -62,7 +66,9 @@ class CheckListViewController : UITableViewController, AddItemViewControllerDele
     
     override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
         let edit = UITableViewRowAction(style: .normal, title: "Edit") { action, index in
-            print("edit button tapped")
+            let destination = AddItemViewController(item: self.items[editActionsForRowAt.row])
+            destination.delegate = self
+            self.navigationController?.pushViewController(destination, animated: true)
         }
         edit.backgroundColor = .lightGray
         let delete = UITableViewRowAction(style: .normal, title: "Delete") { action, index in

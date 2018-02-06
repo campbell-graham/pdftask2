@@ -13,9 +13,23 @@ class AddItemViewController: UITableViewController, UITextFieldDelegate {
     weak var delegate: AddItemViewControllerDelegate?
     var itemNameTextField : UITextField!
     var doneBarButtonItem: UIBarButtonItem!
+    var item: CheckListItem?
+    
+    
+    init(item : CheckListItem? = nil) {
+        super.init(style: .grouped)
+        doneBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done))
+        navigationItem.rightBarButtonItem = doneBarButtonItem
+        doneBarButtonItem.isEnabled = false
+        self.item = item
+        self.title = item == nil ? "Add Item" : "Edit Item"
+    }
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        navigationItem.largeTitleDisplayMode = .never
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -44,6 +58,7 @@ class AddItemViewController: UITableViewController, UITextFieldDelegate {
         itemNameTextField.placeholder = "Enter reminder text here"
         itemNameTextField.font = UIFont.systemFont(ofSize: 17)
         cell.contentView.addSubview(itemNameTextField)
+        itemNameTextField.text = item?.text
         return cell
     }
     
@@ -51,16 +66,15 @@ class AddItemViewController: UITableViewController, UITextFieldDelegate {
         return nil
     }
     
-    init() {
-        super.init(style: .grouped)
-        doneBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done))
-        navigationItem.rightBarButtonItem = doneBarButtonItem
-        doneBarButtonItem.isEnabled = false
-    }
-    
     @IBAction func done() {
-        delegate?.addItemViewController(self, didFinishAdding: CheckListItem(text: itemNameTextField.text!, checked: false))
-        navigationController?.popViewController(animated: true)
+        if item != nil {
+            item?.text = itemNameTextField.text!
+        }
+        else {
+            delegate?.addItemViewController(self, didFinishAdding: CheckListItem(text: itemNameTextField.text!, checked: false))
+        }
+          navigationController?.popViewController(animated: true)
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
