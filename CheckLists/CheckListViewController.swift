@@ -10,24 +10,22 @@ import UIKit
 
 class CheckListViewController : UITableViewController, ItemDetailViewControllerDelegate {
     
-    var items: [CheckListItem]
+    var items = [CheckListItem]()
 
     
    
     
     init() {
-        items = [CheckListItem]()
-        items.append(CheckListItem(text: "Some text 0", checked: false))
-        items.append(CheckListItem(text: "Some text 1", checked: false))
-        items.append(CheckListItem(text: "Some text 2", checked: false))
-        items.append(CheckListItem(text: "Some text 3", checked: false))
-        items.append(CheckListItem(text: "Some text 4", checked: false))
         super.init(nibName: nil, bundle: nil)
         let addListItemBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItem))
         self.navigationItem.rightBarButtonItem = addListItemBarButtonItem
         self.title = "Items"
         tableView.tableFooterView = UIView()
         tableView.rowHeight = 64
+        
+        //test
+        print("Documents folder is \(documentsDirectory())")
+        print("Data file path is \(dataFilePath())")
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -37,6 +35,8 @@ class CheckListViewController : UITableViewController, ItemDetailViewControllerD
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "CheckListItem")
+        loadCheckListItems()
+        tableView.reloadData()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -62,6 +62,7 @@ class CheckListViewController : UITableViewController, ItemDetailViewControllerD
             configureCheckmark(for: cell, with: item)
         }
         tableView.deselectRow(at: indexPath, animated: true)
+        saveCheckListItems()
     }
     
     override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
@@ -75,6 +76,7 @@ class CheckListViewController : UITableViewController, ItemDetailViewControllerD
             self.items.remove(at: editActionsForRowAt.row)
             let indexPaths = [editActionsForRowAt]
             tableView.deleteRows(at: indexPaths, with: .automatic)
+            self.saveCheckListItems()
         }
         delete.backgroundColor = .red
         return [delete, edit]
@@ -107,9 +109,42 @@ class CheckListViewController : UITableViewController, ItemDetailViewControllerD
         super.didReceiveMemoryWarning()
     }
     
-    func editItemViewController(_ controller: ItemDetailViewController, didFinishAdding item: CheckListItem) {
+    func itemDetailViewController(_ controller: ItemDetailViewController, didFinishAdding item: CheckListItem) {
         items.append(item)
         tableView.reloadData()
+        saveCheckListItems()
+    }
+    
+    func documentsDirectory() -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths[0]
+    }
+    
+    func dataFilePath() -> URL {
+        return documentsDirectory().appendingPathComponent("CheckLists.plist")
+    }
+    
+    func saveCheckListItems() {
+        let encoder = PropertyListEncoder()
+        do {
+            let data = try encoder.encode(items)
+            try data.write(to: dataFilePath(), options: Data.WritingOptions.atomic)
+        } catch {
+            print("Error encoding item array")
+        }
+    }
+    
+    func loadCheckListItems() {
+        let path = dataFilePath()
+        if let data = try? Data(contentsOf: path) {
+            let decoder = PropertyListDecoder()
+            do {
+                items = try decoder.decode([CheckListItem].self, from: data)
+            }
+            catch {
+                print("Error decoding item array")
+            }
+        }
     }
     
 }

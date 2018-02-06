@@ -71,7 +71,7 @@ class ItemDetailViewController: UITableViewController, UITextFieldDelegate {
             item?.text = itemNameTextField.text!
         }
         else {
-            delegate?.editItemViewController(self, didFinishAdding: CheckListItem(text: itemNameTextField.text!, checked: false))
+            delegate?.itemDetailViewController(self, didFinishAdding: CheckListItem(text: itemNameTextField.text!, checked: false))
         }
           navigationController?.popViewController(animated: true)
         
@@ -94,5 +94,5 @@ class ItemDetailViewController: UITableViewController, UITextFieldDelegate {
 }
 
 protocol ItemDetailViewControllerDelegate: class {
-    func editItemViewController(_ controller: ItemDetailViewController, didFinishAdding item: CheckListItem)
+    func itemDetailViewController(_ controller: ItemDetailViewController, didFinishAdding item: CheckListItem)
 }
