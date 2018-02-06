@@ -42,12 +42,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CheckLists/AllListsViewController.swift"
-            timestampString = "539586143.717502"
+            timestampString = "539588729.785512"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "80"
-            endingLineNumber = "80"
-            landmarkName = "listDetailViewController(_:didFinishAdding:)"
+            startingLineNumber = "102"
+            endingLineNumber = "102"
+            landmarkName = "saveChecklists()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

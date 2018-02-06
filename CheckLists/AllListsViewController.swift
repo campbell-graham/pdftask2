@@ -27,15 +27,8 @@ class AllListsViewController: UITableViewController, ListDetailViewControllerDel
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "ListItem")
         tableView.tableFooterView = UIView()
         tableView.rowHeight = 64
-        
-        //dummy data
-        lists.append(Checklist(name: "Birthdays"))
-        lists.append(Checklist(name: "Groceries"))
-        lists.append(Checklist(name: "Other stuff"))
-        
         addChecklistBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(openListDetailController))
         navigationItem.rightBarButtonItem = addChecklistBarButtonItem
-        
         tableView.reloadData()
     }
 
@@ -84,10 +77,49 @@ class AllListsViewController: UITableViewController, ListDetailViewControllerDel
         tableView.reloadData()
     }
     
+//    //TAKE OUT WHEN POSSIBLE
+//    override func viewDidAppear(_ animated: Bool) {
+//        saveChecklists()
+//        tableView.reloadData()
+//    }
+    
     @IBAction func openListDetailController() {
         let destination = ListDetailViewController(checklist: nil)
         destination.delegate = self
         navigationController?.pushViewController(destination, animated: true)
+    }
+    
+    func documentsDirectory() -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths[0]
+    }
+    
+    func dataFilePath() -> URL {
+        return documentsDirectory().appendingPathComponent("checklists.plist")
+    }
+    
+    func saveChecklists() {
+        let encoder = PropertyListEncoder()
+        do {
+            let data = try encoder.encode(lists)
+            try data.write(to: dataFilePath(), options: Data.WritingOptions.atomic)
+        } catch {
+            print("Error encoding lists array")
+        }
+    }
+    
+    func loadChecklists() {
+        let path = dataFilePath()
+        if let data = try? Data(contentsOf: path) {
+            let decoder = PropertyListDecoder()
+            do {
+                lists = try decoder.decode([Checklist].self, from: data)
+            }
+            catch {
+                print("Error decoding lists array")
+            }
+        }
+        tableView.reloadData()
     }
 
 }

@@ -10,10 +10,7 @@ import UIKit
 
 class CheckListViewController : UITableViewController, ItemDetailViewControllerDelegate {
     
-    var items = [CheckListItem]()
     var checklist: Checklist!
-    
-   
     
     init(checklist: Checklist) {
         self.checklist = checklist
@@ -31,7 +28,6 @@ class CheckListViewController : UITableViewController, ItemDetailViewControllerD
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "CheckListItem")
-        loadCheckListItems()
         tableView.reloadData()
         title = checklist.name
     }
@@ -41,12 +37,12 @@ class CheckListViewController : UITableViewController, ItemDetailViewControllerD
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return items.count
+        return checklist.items.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CheckListItem", for: indexPath)
-        let item = items[indexPath.row]
+        let item = checklist.items[indexPath.row]
         configureText(for: cell, with: item)
         configureCheckmark(for: cell, with: item)
         return cell
@@ -54,26 +50,24 @@ class CheckListViewController : UITableViewController, ItemDetailViewControllerD
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let cell = tableView.cellForRow(at: indexPath) {
-            let item = items[indexPath.row]
+            let item = checklist.items[indexPath.row]
             item.toggleChecked()
             configureCheckmark(for: cell, with: item)
         }
         tableView.deselectRow(at: indexPath, animated: true)
-        saveCheckListItems()
     }
     
     override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
         let edit = UITableViewRowAction(style: .normal, title: "Edit") { action, index in
-            let destination = ItemDetailViewController(item: self.items[editActionsForRowAt.row])
+            let destination = ItemDetailViewController(item: self.checklist.items[editActionsForRowAt.row])
             destination.delegate = self
             self.navigationController?.pushViewController(destination, animated: true)
         }
         edit.backgroundColor = .lightGray
         let delete = UITableViewRowAction(style: .normal, title: "Delete") { action, index in
-            self.items.remove(at: editActionsForRowAt.row)
+            self.checklist.items.remove(at: editActionsForRowAt.row)
             let indexPaths = [editActionsForRowAt]
             tableView.deleteRows(at: indexPaths, with: .automatic)
-            self.saveCheckListItems()
         }
         delete.backgroundColor = .red
         return [delete, edit]
@@ -107,41 +101,7 @@ class CheckListViewController : UITableViewController, ItemDetailViewControllerD
     }
     
     func itemDetailViewController(_ controller: ItemDetailViewController, didFinishAdding item: CheckListItem) {
-        items.append(item)
+        checklist.items.append(item)
         tableView.reloadData()
-        saveCheckListItems()
     }
-    
-    func documentsDirectory() -> URL {
-        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        return paths[0]
-    }
-    
-    func dataFilePath() -> URL {
-        return documentsDirectory().appendingPathComponent("CheckLists.plist")
-    }
-    
-    func saveCheckListItems() {
-        let encoder = PropertyListEncoder()
-        do {
-            let data = try encoder.encode(items)
-            try data.write(to: dataFilePath(), options: Data.WritingOptions.atomic)
-        } catch {
-            print("Error encoding item array")
-        }
-    }
-    
-    func loadCheckListItems() {
-        let path = dataFilePath()
-        if let data = try? Data(contentsOf: path) {
-            let decoder = PropertyListDecoder()
-            do {
-                items = try decoder.decode([CheckListItem].self, from: data)
-            }
-            catch {
-                print("Error decoding item array")
-            }
-        }
-    }
-    
 }
