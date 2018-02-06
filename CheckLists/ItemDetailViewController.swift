@@ -8,9 +8,9 @@
 
 import UIKit
 
-class AddItemViewController: UITableViewController, UITextFieldDelegate {
+class ItemDetailViewController: UITableViewController, UITextFieldDelegate {
     
-    weak var delegate: AddItemViewControllerDelegate?
+    weak var delegate: ItemDetailViewControllerDelegate?
     var itemNameTextField : UITextField!
     var doneBarButtonItem: UIBarButtonItem!
     var item: CheckListItem?
@@ -71,7 +71,7 @@ class AddItemViewController: UITableViewController, UITextFieldDelegate {
             item?.text = itemNameTextField.text!
         }
         else {
-            delegate?.addItemViewController(self, didFinishAdding: CheckListItem(text: itemNameTextField.text!, checked: false))
+            delegate?.editItemViewController(self, didFinishAdding: CheckListItem(text: itemNameTextField.text!, checked: false))
         }
           navigationController?.popViewController(animated: true)
         
@@ -93,6 +93,6 @@ class AddItemViewController: UITableViewController, UITextFieldDelegate {
     }
 }
 
-protocol AddItemViewControllerDelegate: class {
-    func addItemViewController(_ controller: AddItemViewController, didFinishAdding item: CheckListItem)
+protocol ItemDetailViewControllerDelegate: class {
+    func editItemViewController(_ controller: ItemDetailViewController, didFinishAdding item: CheckListItem)
 }

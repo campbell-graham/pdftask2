@@ -8,7 +8,7 @@
 
 import UIKit
 
-class CheckListViewController : UITableViewController, AddItemViewControllerDelegate {
+class CheckListViewController : UITableViewController, ItemDetailViewControllerDelegate {
     
     var items: [CheckListItem]
 
@@ -66,7 +66,7 @@ class CheckListViewController : UITableViewController, AddItemViewControllerDele
     
     override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
         let edit = UITableViewRowAction(style: .normal, title: "Edit") { action, index in
-            let destination = AddItemViewController(item: self.items[editActionsForRowAt.row])
+            let destination = ItemDetailViewController(item: self.items[editActionsForRowAt.row])
             destination.delegate = self
             self.navigationController?.pushViewController(destination, animated: true)
         }
@@ -98,7 +98,7 @@ class CheckListViewController : UITableViewController, AddItemViewControllerDele
     }
     
     @IBAction func addItem() {
-        let destination = AddItemViewController()
+        let destination = ItemDetailViewController()
         destination.delegate = self
         navigationController?.pushViewController(destination, animated: true)
     }
@@ -107,7 +107,7 @@ class CheckListViewController : UITableViewController, AddItemViewControllerDele
         super.didReceiveMemoryWarning()
     }
     
-    func addItemViewController(_ controller: AddItemViewController, didFinishAdding item: CheckListItem) {
+    func editItemViewController(_ controller: ItemDetailViewController, didFinishAdding item: CheckListItem) {
         items.append(item)
         tableView.reloadData()
     }
