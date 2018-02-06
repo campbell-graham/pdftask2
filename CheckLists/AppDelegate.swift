@@ -19,7 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.main.bounds)
         let myCheckListViewController = CheckListViewController()
         let navController = UINavigationController(rootViewController: myCheckListViewController)
-        //navController.navigationBar.prefersLargeTitles = true
+        navController.navigationBar.prefersLargeTitles = true
         window?.rootViewController = navController
         window?.makeKeyAndVisible()
         return true
