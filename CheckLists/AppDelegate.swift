@@ -17,8 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         window = UIWindow(frame: UIScreen.main.bounds)
-        let myCheckListViewController = CheckListViewController()
-        let navController = UINavigationController(rootViewController: myCheckListViewController)
+        let navController = UINavigationController(rootViewController: AllListsViewController())
         navController.navigationBar.prefersLargeTitles = true
         window?.rootViewController = navController
         window?.makeKeyAndVisible()
