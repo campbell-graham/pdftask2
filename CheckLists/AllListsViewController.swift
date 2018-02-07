@@ -124,8 +124,15 @@ class AllListsViewController: UITableViewController, ListDetailViewControllerDel
         }
         edit.backgroundColor = .lightGray
         let delete = UITableViewRowAction(style: .normal, title: "Delete") { action, index in
-            self.lists.remove(at: editActionsForRowAt.row)
             let indexPaths = [editActionsForRowAt]
+            if editActionsForRowAt.section == 0 {
+                self.notFinishedLists.remove(at: editActionsForRowAt.row)
+                self.lists.remove(at: self.lists.index(of: self.notFinishedLists[editActionsForRowAt.row])!)
+            } else if editActionsForRowAt.section == 1 {
+                self.lists.remove(at: self.lists.index(of: self.finishedLists[editActionsForRowAt.row])!)
+                self.finishedLists.remove(at: editActionsForRowAt.row)
+            }
+           
             tableView.deleteRows(at: indexPaths, with: .automatic)
             self.saveChecklists()
         }
