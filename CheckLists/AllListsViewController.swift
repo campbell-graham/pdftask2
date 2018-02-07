@@ -8,7 +8,7 @@
 
 import UIKit
 
-class AllListsViewController: UITableViewController, ListDetailViewControllerDelegate, CheckListViewControllerDelegate {
+class AllListsViewController: UITableViewController, ListDetailViewControllerDelegate, CheckListViewControllerDelegate, UINavigationControllerDelegate {
     
     var lists = [Checklist]()
     var addChecklistBarButtonItem: UIBarButtonItem!
@@ -24,7 +24,6 @@ class AllListsViewController: UITableViewController, ListDetailViewControllerDel
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "ListItem")
         tableView.tableFooterView = UIView()
         tableView.rowHeight = 64
         addChecklistBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(openListDetailController))
@@ -43,12 +42,25 @@ class AllListsViewController: UITableViewController, ListDetailViewControllerDel
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ListItem", for: indexPath)
-        cell.textLabel!.text = lists[indexPath.row].name
-        return cell
+        var cell = tableView.dequeueReusableCell(withIdentifier: "cell")
+        if cell == nil {
+            cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cell")
+        }
+        let list = lists[indexPath.row]
+        cell?.textLabel!.text = list.name
+        let incompleteItems = list.items.filter({!$0.checked}).count
+        if list.items.count == 0 {
+            cell?.detailTextLabel?.text = "No items"
+        } else if incompleteItems == 0 {
+            cell?.detailTextLabel?.text = "All done!"
+        } else {
+            cell?.detailTextLabel?.text = incompleteItems > 1 ? String("\(incompleteItems) items remaining") : String("\(incompleteItems) item remaining")
+        }
+        return cell!
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        UserDefaults.standard.set(indexPath.row, forKey: "ChecklistIndex")
         let destination = CheckListViewController(checklist: lists[indexPath.row])
         destination.delegate = self
         self.navigationController?.pushViewController(destination, animated: true)
@@ -81,11 +93,16 @@ class AllListsViewController: UITableViewController, ListDetailViewControllerDel
         tableView.reloadData()
     }
     
-//    //TAKE OUT WHEN POSSIBLE
-//    override func viewDidAppear(_ animated: Bool) {
-//        saveChecklists()
-//        tableView.reloadData()
-//    }
+   
+    override func viewDidAppear(_ animated: Bool) {
+        navigationController?.delegate = self
+        let index = UserDefaults.standard.integer(forKey: "ChecklistIndex")
+        if index != -1 {
+            let destination = CheckListViewController(checklist: lists[index])
+            navigationController?.pushViewController(destination, animated: false)
+        }
+        tableView.reloadData()
+    }
     
     @IBAction func openListDetailController() {
         let destination = ListDetailViewController(checklist: nil)
@@ -128,6 +145,13 @@ class AllListsViewController: UITableViewController, ListDetailViewControllerDel
     
     func passMessageToSave(_ controller: CheckListViewController) {
         saveChecklists()
+    }
+    
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        //checks if the back button was pressed
+        if viewController === self {
+            UserDefaults.standard.set(-1, forKey: "ChecklistIndex")
+        }
     }
 
 }
