@@ -98,7 +98,7 @@ class AllListsViewController: UITableViewController, ListDetailViewControllerDel
     override func viewDidAppear(_ animated: Bool) {
         navigationController?.delegate = self
         let index = UserDefaults.standard.integer(forKey: "ChecklistIndex")
-        if index != -1 {
+        if index != -1 && lists.count > 0{
             let destination = CheckListViewController(checklist: lists[index])
             navigationController?.pushViewController(destination, animated: false)
         }
