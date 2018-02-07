@@ -82,7 +82,7 @@ class AllListsViewController: UITableViewController, ListDetailViewControllerDel
             let list = notFinishedLists[indexPath.row]
             let incompleteItems = list.items.filter({!$0.checked}).count
             cell?.textLabel!.text = list.name
-            cell?.detailTextLabel?.text = incompleteItems > 1 ? String("\(incompleteItems) items remaining") : String("\(incompleteItems) item remaining")
+            cell?.detailTextLabel?.text = incompleteItems > 1 || incompleteItems == 0 ? String("\(incompleteItems) items remaining") : String("\(incompleteItems) item remaining")
             }
             
         //default to finished
