@@ -69,6 +69,7 @@ class ItemDetailViewController: UITableViewController, UITextFieldDelegate {
     @IBAction func done() {
         if item != nil {
             item?.text = itemNameTextField.text!
+            delegate?.itemDetailViewControllerDidFinishEditing(self)
         }
         else {
             delegate?.itemDetailViewController(self, didFinishAdding: CheckListItem(text: itemNameTextField.text!, checked: false))
@@ -95,4 +96,5 @@ class ItemDetailViewController: UITableViewController, UITextFieldDelegate {
 
 protocol ItemDetailViewControllerDelegate: class {
     func itemDetailViewController(_ controller: ItemDetailViewController, didFinishAdding item: CheckListItem)
+    func itemDetailViewControllerDidFinishEditing(_ controller: ItemDetailViewController)
 }

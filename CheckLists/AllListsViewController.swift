@@ -8,7 +8,7 @@
 
 import UIKit
 
-class AllListsViewController: UITableViewController, ListDetailViewControllerDelegate {
+class AllListsViewController: UITableViewController, ListDetailViewControllerDelegate, CheckListViewControllerDelegate {
     
     var lists = [Checklist]()
     var addChecklistBarButtonItem: UIBarButtonItem!
@@ -29,6 +29,7 @@ class AllListsViewController: UITableViewController, ListDetailViewControllerDel
         tableView.rowHeight = 64
         addChecklistBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(openListDetailController))
         navigationItem.rightBarButtonItem = addChecklistBarButtonItem
+        loadChecklists()
         tableView.reloadData()
     }
 
@@ -49,6 +50,7 @@ class AllListsViewController: UITableViewController, ListDetailViewControllerDel
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let destination = CheckListViewController(checklist: lists[indexPath.row])
+        destination.delegate = self
         self.navigationController?.pushViewController(destination, animated: true)
     }
     
@@ -70,10 +72,12 @@ class AllListsViewController: UITableViewController, ListDetailViewControllerDel
     
     func listDetailViewController(_ controller: ListDetailViewController, didFinishAdding checklist: Checklist) {
         lists.append(checklist)
+        saveChecklists()
         tableView.reloadData()
     }
     
     func listDetailViewController(_ controller: ListDetailViewController, didFinishEditing checklist: Checklist) {
+        saveChecklists()
         tableView.reloadData()
     }
     
@@ -120,6 +124,10 @@ class AllListsViewController: UITableViewController, ListDetailViewControllerDel
             }
         }
         tableView.reloadData()
+    }
+    
+    func passMessageToSave(_ controller: CheckListViewController) {
+        saveChecklists()
     }
 
 }

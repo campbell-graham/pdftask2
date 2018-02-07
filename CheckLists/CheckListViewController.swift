@@ -9,8 +9,9 @@
 import UIKit
 
 class CheckListViewController : UITableViewController, ItemDetailViewControllerDelegate {
-    
+   
     var checklist: Checklist!
+    var delegate: CheckListViewControllerDelegate?
     
     init(checklist: Checklist) {
         self.checklist = checklist
@@ -53,6 +54,7 @@ class CheckListViewController : UITableViewController, ItemDetailViewControllerD
             let item = checklist.items[indexPath.row]
             item.toggleChecked()
             configureCheckmark(for: cell, with: item)
+            delegate?.passMessageToSave(self)
         }
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -102,6 +104,16 @@ class CheckListViewController : UITableViewController, ItemDetailViewControllerD
     
     func itemDetailViewController(_ controller: ItemDetailViewController, didFinishAdding item: CheckListItem) {
         checklist.items.append(item)
+        delegate?.passMessageToSave(self)
         tableView.reloadData()
     }
+    
+    func itemDetailViewControllerDidFinishEditing(_ controller: ItemDetailViewController) {
+        delegate?.passMessageToSave(self)
+        tableView.reloadData()
+    }
+}
+
+protocol CheckListViewControllerDelegate: class {
+    func passMessageToSave(_ controller: CheckListViewController)
 }
