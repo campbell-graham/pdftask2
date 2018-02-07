@@ -14,9 +14,9 @@ class AllListsViewController: UITableViewController, ListDetailViewControllerDel
     var finishedLists = [Checklist]()
     var notFinishedLists = [Checklist]()
     var addChecklistBarButtonItem: UIBarButtonItem!
-    
+   
     init() {
-         super.init(style: .grouped)
+        super.init(style: .grouped)
         self.title = "Checklists"
     }
     
@@ -169,8 +169,6 @@ class AllListsViewController: UITableViewController, ListDetailViewControllerDel
         finishedLists = lists.filter({$0.items.count == 0})
         //lists that are not finished contain everything else
         notFinishedLists = lists.filter({!finishedLists.contains($0)})
-        print(finishedLists.count)
-        print(notFinishedLists.count)
     }
     
     @IBAction func openListDetailController() {

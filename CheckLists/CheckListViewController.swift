@@ -12,6 +12,8 @@ class CheckListViewController : UITableViewController, ItemDetailViewControllerD
    
     var checklist: Checklist!
     var delegate: CheckListViewControllerDelegate?
+    var noItemsLabel = UILabel()
+    
     
     init(checklist: Checklist) {
         self.checklist = checklist
@@ -31,6 +33,23 @@ class CheckListViewController : UITableViewController, ItemDetailViewControllerD
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "CheckListItem")
         tableView.reloadData()
         title = checklist.name
+        
+        noItemsLabel.text = "No Items!"
+        noItemsLabel.tag = 1
+        noItemsLabel.textAlignment = .center
+        if checklist.items.count == 0 {
+            view.addSubview(noItemsLabel)
+            
+            noItemsLabel.translatesAutoresizingMaskIntoConstraints = false
+            view.addConstraints([NSLayoutConstraint(item: noItemsLabel, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 0),
+                                 NSLayoutConstraint(item: noItemsLabel, attribute: .trailing, relatedBy: .equal, toItem: view, attribute: .trailing, multiplier: 1, constant: 0),
+                                 NSLayoutConstraint(item: noItemsLabel, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1, constant: 50),
+                                 NSLayoutConstraint(item: noItemsLabel, attribute: .width, relatedBy: .equal, toItem: view, attribute: .width, multiplier: 1, constant: 0)
+                                 ])
+        }
+        
+        
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -105,6 +124,9 @@ class CheckListViewController : UITableViewController, ItemDetailViewControllerD
     
     func itemDetailViewController(_ controller: ItemDetailViewController, didFinishAdding item: CheckListItem) {
         checklist.items.append(item)
+        if let viewToRemove = view.viewWithTag(1) {
+            viewToRemove.removeFromSuperview()
+        }
         delegate?.CheckListViewControllerDidChange(self)
         tableView.reloadData()
     }
