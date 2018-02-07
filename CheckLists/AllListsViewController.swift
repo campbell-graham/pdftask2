@@ -77,6 +77,7 @@ class AllListsViewController: UITableViewController, ListDetailViewControllerDel
             self.lists.remove(at: editActionsForRowAt.row)
             let indexPaths = [editActionsForRowAt]
             tableView.deleteRows(at: indexPaths, with: .automatic)
+            self.saveChecklists()
         }
         delete.backgroundColor = .red
         return [delete, edit]
@@ -143,7 +144,7 @@ class AllListsViewController: UITableViewController, ListDetailViewControllerDel
         tableView.reloadData()
     }
     
-    func passMessageToSave(_ controller: CheckListViewController) {
+    func CheckListViewControllerDidChange(_ controller: CheckListViewController) {
         saveChecklists()
     }
     

@@ -54,7 +54,7 @@ class CheckListViewController : UITableViewController, ItemDetailViewControllerD
             let item = checklist.items[indexPath.row]
             item.toggleChecked()
             configureCheckmark(for: cell, with: item)
-            delegate?.passMessageToSave(self)
+            delegate?.CheckListViewControllerDidChange(self)
         }
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -70,6 +70,7 @@ class CheckListViewController : UITableViewController, ItemDetailViewControllerD
             self.checklist.items.remove(at: editActionsForRowAt.row)
             let indexPaths = [editActionsForRowAt]
             tableView.deleteRows(at: indexPaths, with: .automatic)
+            self.delegate?.CheckListViewControllerDidChange(self)
         }
         delete.backgroundColor = .red
         return [delete, edit]
@@ -104,16 +105,16 @@ class CheckListViewController : UITableViewController, ItemDetailViewControllerD
     
     func itemDetailViewController(_ controller: ItemDetailViewController, didFinishAdding item: CheckListItem) {
         checklist.items.append(item)
-        delegate?.passMessageToSave(self)
+        delegate?.CheckListViewControllerDidChange(self)
         tableView.reloadData()
     }
     
     func itemDetailViewControllerDidFinishEditing(_ controller: ItemDetailViewController) {
-        delegate?.passMessageToSave(self)
+        delegate?.CheckListViewControllerDidChange(self)
         tableView.reloadData()
     }
 }
 
 protocol CheckListViewControllerDelegate: class {
-    func passMessageToSave(_ controller: CheckListViewController)
+    func CheckListViewControllerDidChange(_ controller: CheckListViewController)
 }
