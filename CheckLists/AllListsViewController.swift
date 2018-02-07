@@ -39,8 +39,8 @@ class AllListsViewController: UITableViewController, ListDetailViewControllerDel
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case 0 : return finishedLists.count
-        case 1 : return notFinishedLists.count
+        case 0 : return notFinishedLists.count
+        case 1 : return finishedLists.count
         default : return 0
         }
     }
@@ -51,10 +51,10 @@ class AllListsViewController: UITableViewController, ListDetailViewControllerDel
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if (section == 0){
-            return "Finished"
+            return "Outstanding"
         }
         if (section == 1){
-            return "Outstanding"
+            return "Finished"
         }
         return ""
     }
@@ -68,7 +68,13 @@ class AllListsViewController: UITableViewController, ListDetailViewControllerDel
         
         switch indexPath.section {
         //finished
-        case 0 : do {
+        case 0: do {
+            let list = notFinishedLists[indexPath.row]
+            let incompleteItems = list.items.filter({!$0.checked}).count
+            cell?.textLabel!.text = list.name
+            cell?.detailTextLabel?.text = incompleteItems > 1 || incompleteItems == 0 ? String("\(incompleteItems) items remaining") : String("\(incompleteItems) item remaining")
+            }
+        case 1 : do {
             let list = finishedLists[indexPath.row]
             cell?.textLabel!.text = list.name
             if list.items.count == 0 {
@@ -77,14 +83,6 @@ class AllListsViewController: UITableViewController, ListDetailViewControllerDel
                 cell?.detailTextLabel?.text = "All done!"
             }
             }
-        //not finished
-        case 1 : do {
-            let list = notFinishedLists[indexPath.row]
-            let incompleteItems = list.items.filter({!$0.checked}).count
-            cell?.textLabel!.text = list.name
-            cell?.detailTextLabel?.text = incompleteItems > 1 || incompleteItems == 0 ? String("\(incompleteItems) items remaining") : String("\(incompleteItems) item remaining")
-            }
-            
         //default to finished
         default : do {
             let list = finishedLists[indexPath.row]
@@ -104,15 +102,15 @@ class AllListsViewController: UITableViewController, ListDetailViewControllerDel
         UserDefaults.standard.set(indexPath.section, forKey: "ChecklistIndexSection")
         switch indexPath.section {
         case 0: do {
-            let destination = CheckListViewController(checklist: finishedLists[indexPath.row])
-            destination.delegate = self
-            self.navigationController?.pushViewController(destination, animated: true)
-        }
-        case 1: do {
             let destination = CheckListViewController(checklist: notFinishedLists[indexPath.row])
             destination.delegate = self
             self.navigationController?.pushViewController(destination, animated: true)
             }
+        case 1: do {
+            let destination = CheckListViewController(checklist: finishedLists[indexPath.row])
+            destination.delegate = self
+            self.navigationController?.pushViewController(destination, animated: true)
+        }
         default:
             print("well this is awkward....I couldn't find this list!")
         }
@@ -151,10 +149,10 @@ class AllListsViewController: UITableViewController, ListDetailViewControllerDel
         let indexSection = UserDefaults.standard.integer(forKey: "ChecklistIndexSection")
         if indexRow != -1 && indexSection != -1 && lists.count > 0{
             if indexSection == 0 {
-                let destination = CheckListViewController(checklist: finishedLists[indexRow])
+                let destination = CheckListViewController(checklist: notFinishedLists[indexRow])
                 navigationController?.pushViewController(destination, animated: false)
             } else if indexSection == 1 {
-                let destination = CheckListViewController(checklist: notFinishedLists[indexRow])
+                let destination = CheckListViewController(checklist: finishedLists[indexRow])
                 navigationController?.pushViewController(destination, animated: false)
             }
             else {
